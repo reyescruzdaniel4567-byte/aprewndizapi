@@ -1,0 +1,108 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Aprendices</title>
+    <link rel="stylesheet" href="https://cloudflare.com">
+    <link rel="stylesheet" href="{% static 'bases/css/estilos.css' %}">
+</head>
+<body id="pagina-principal" class="pagina">
+    <header id="encabezado-principal" class="encabezado">
+        <h1 id="titulo-principal" class="titulo-principal">
+            Sistema para listar los Aprendices
+        </h1>
+        <p id="descripcion-principal" class="descripcion-principal">
+            Información de aprendices, programas, instructores y competencias
+        </p>
+    </header>
+    <main id="contenido-principal" class="contenido">
+        <section id="seccion-aprendices" class="seccion">
+            <h2 id="titulo-aprendices" class="titulo-seccion">
+                Lista de Aprendices
+            </h2>
+            <div id="barra-acciones" class="barra-acciones">
+                <a href="{% url 'crear_aprendiz' %}" class="btn-registrar">
+                    <i class="fas fa-plus"></i> Registrar Aprendiz
+                </a>
+
+                <!-- Se removieron los atributos style="..." manuales para que tome el CSS limpio -->
+                <a href="{% url 'ver_mapa_aprendices' %}" class="btn-mapa">
+                    <i class="fas fa-map-marker-alt"></i> Ver mapa de ubicaciones
+                </a>
+                
+                <form id="form-busqueda" class="form-busqueda" method="get" action="{% url 'buscar_aprendiz' %}">
+                    <input type="text" name="documento" inputmode="numeric" class="input-busqueda" placeholder="Buscar por documento">
+                    <button type="submit" class="btn-buscar">
+                        <i class="fas fa-search"></i> Buscar
+                    </button>
+                </form>
+            </div>
+            <div id="contenedor-tabla-aprendices" class="contenedor-tabla">
+                <table id="tabla-aprendices" class="tabla">
+                    <thead class="tabla-encabezado">
+                        <tr class="fila-titulos">
+                            <th class="columna">ID</th>
+                            <th class="columna">Nombre</th>
+                            <th class="columna">Apellido</th>
+                            <th class="columna">Documento</th>
+                            <th class="columna">Tipo Documento</th>
+                            <th class="columna">Correo</th>
+                            <th class="columna">Teléfono</th>
+                            <th class="columna">Programa / Ficha</th>
+                            <th class="columna">Competencias</th>
+                            <th class="columna">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody class="tabla-cuerpo">
+                        {% for aprendiz in aprendices %}
+                        <tr class="fila fila-aprendiz">
+                            <td class="celda">{{ aprendiz.pk }}</td>
+                            <td class="celda">{{ aprendiz.nombre }}</td>
+                            <td class="celda">{{ aprendiz.apellido }}</td>
+                            <td class="celda">{{ aprendiz.documento }}</td>
+                            <td class="celda">{{ aprendiz.tipo_de_documento }}</td>
+                            <td class="celda">{{ aprendiz.correo }}</td>
+                            <td class="celda">{{ aprendiz.telefono }}</td>
+                            <td class="celda">
+                                {% if aprendiz.ficha %}
+                                    {{ aprendiz.ficha.nombre }} - {{ aprendiz.ficha.ficha }}
+                                {% else %}
+                                    <span class="texto-vacio">Sin programa</span>
+                                {% endif %}
+                            </td>
+                            <td class="celda">
+                                {% for competencia in aprendiz.competencias.all %}
+                                    <span class="etiqueta-competencia">
+                                        {{ competencia.nombre }}
+                                    </span>
+                                {% empty %}
+                                    <span class="texto-vacio">Sin competencias</span>
+                                {% endfor %}
+                            </td>
+                            <td class="celda celda-acciones">
+                                <a href="{% url 'eliminar_aprendiz' aprendiz.documento %}" class="btn-eliminar" onclick="return confirm('¿Seguro que quieres eliminar este aprendiz?');">
+                                    <i class="fas fa-trash"></i> Eliminar
+                                </a>
+                                <a href="{% url 'editar_aprendiz' aprendiz.documento %}" class="btn-editar">
+                                    <i class="fas fa-pen"></i> Editar
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="10" class="celda celda-vacia">
+                                <span class="texto-vacio">
+                                    No hay aprendices registrados en el sistema.
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

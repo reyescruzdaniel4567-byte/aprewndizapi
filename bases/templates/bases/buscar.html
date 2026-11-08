@@ -1,0 +1,62 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buscar aprendiz</title>
+  <link rel="stylesheet" href="{% static 'bases/css/buscar.css' %}">
+</head>
+<body>
+
+  <h1>Buscar aprendiz por documento</h1>
+
+  <form method="get" action="{% url 'buscar_aprendiz' %}">
+    <input type="text" name="documento" inputmode="numeric"
+           value="{{ documento }}" placeholder="Número de documento" autofocus>
+    <button type="submit">Buscar</button>
+  </form>
+
+  {% if buscado %}
+    {% if resultado %}
+      <div class="tarjeta">
+
+        <h2 class="tarjeta-titulo">{{ resultado.nombre }} {{ resultado.apellido }}</h2>
+
+        <p class="dato"><strong>Documento:</strong> {{ resultado.documento }}</p>
+        <p class="dato"><strong>Tipo de documento:</strong> {{ resultado.tipo_de_documento }}</p>
+        <p class="dato"><strong>Correo:</strong> {{ resultado.correo }}</p>
+        <p class="dato"><strong>Teléfono:</strong> {{ resultado.telefono }}</p>
+
+        <p class="dato">
+          <strong>Programa / Ficha:</strong>
+          {% if resultado.ficha %}
+            {{ resultado.ficha.nombre }} - {{ resultado.ficha.ficha }}
+          {% else %}
+            <span class="texto-vacio">Sin programa</span>
+          {% endif %}
+        </p>
+
+        <p class="dato">
+          <strong>Competencias:</strong>
+          <span>
+            {% for competencia in resultado.competencias.all %}
+              <span class="etiqueta-competencia">{{ competencia.nombre }}</span>
+            {% empty %}
+              <span class="texto-vacio">Sin competencias</span>
+            {% endfor %}
+          </span>
+        </p>
+
+      </div>
+    {% else %}
+      <p class="vacio">No existe ningún aprendiz con el documento "{{ documento }}".</p>
+    {% endif %}
+  {% endif %}
+
+  <p class="volver">
+    <a href="{% url 'bases' %}" class="btn-volver">← Volver a la página principal</a>
+  </p>
+
+</body>
+</html>
